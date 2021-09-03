@@ -20,4 +20,4 @@ def welcome (request):
     """
     Welcome page for our fintech application
     """
-    return render(request, 'pages/welcome.html')
+    return render(request, 'users_pages/index.html')
