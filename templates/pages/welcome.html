@@ -4,13 +4,108 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
     <title>Document</title>
 </head>
 <body>
-    welcome {{request.user.username}} to your profile page
+
+    <script>
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== ''){
+                const cookies = document.cookie.split(';');
+                for(let i = 0; i < cookies.length; i++){
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1 ) === (name + '=')){
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+
+                    }
+                    
+
+                }
+                          
+            }
+            return cookieValue;
+        }
+        const csrftoken = getToken('csrftoken');
+
+    </script>
+
+    <h1>Make payments</h1>
+    <!-- welcome {{request.user.username}} to your profile page
 
 
-    <a href="{% url 'account_logout' %}"> Sign out</a>
+    <a href="{% url 'account_logout' %}"> Sign out</a> -->
 
+
+    <form>
+        {% csrf_token %}
+        <button type="button" onClick="makePayment()">Pay Now</button>
+      </form>
+      <script>
+        function makePayment() {
+          FlutterwaveCheckout({
+            public_key: "FLWPUBK_TEST-0ff9b1126da64d80ef87b4dc8df40f00-X",
+            tx_ref: "RX1",
+            amount: 500,
+            currency: "NGN",
+            country: "NG",
+            payment_options: " ",
+            customer: {
+              email: "cornelius@gmail.com",
+              phone_number: "08102909304",
+              name: "Flutterwave Developers",
+            },
+            callback: function (data) { // specified callback function
+            //   console.log(data);
+              status = data.status
+              transref = data.flw_ref
+              amount = data.amount
+              currency = data.currency
+              console.log(status);
+              console.log(transref);
+              console.log(amount);
+              console.log(currency);
+              var url = '/payments'
+              fetch(url, {
+                  method: "POST",
+                  headers:{
+                      'content-type': 'application/json',
+                      'X-CSRFTOKEN': csrftoken,
+                                            
+                  },
+
+                  body:JSON.stringify({
+                      'status':status,
+                      'transref':transref,
+                      'amount': amount,
+                      'currency': currency,
+                    })
+
+                    
+              })
+
+              .then ((response) => {
+                        if (data.status == 'successful') {
+                            console.log('working now')
+                            window.location.replace('/success')
+                        }
+                        return response.json()
+                    }) 
+
+              
+
+            },
+            customizations: {
+              title: "My store",
+              description: "Payment for items in cart",
+              logo: "https://assets.piedpiper.com/logo.png",
+            },
+          });
+        }
+      </script>
 </body>
 </html>

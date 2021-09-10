@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'balance',
+    'transaction'
 ]
 
 SITE_ID = 1

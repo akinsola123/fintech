@@ -19,7 +19,7 @@ class User_Account(models.Model):
     )
 
     balance = models.FloatField(
-        verbose_name = _('user balance'),
+        verbose_name = _('balance'),
         default = 0,
         null = True,
         help_text = _('the user balance for this account')
